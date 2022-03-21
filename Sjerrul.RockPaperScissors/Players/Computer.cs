@@ -3,47 +3,54 @@ using Sjerrul.RockPaperScissors.Strategies;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sjerrul.RockPaperScissors.Players
 {
-    class Computer : Player
+    public class Computer : IComputer
     {
-        private int _switchStrategyAfter = 5;
-        private double _degradeStragety = 0.7;
-
-        private IList<IStrategy> _strategies { get; set; }
-        private IStrategy _currentStrategy;
-        public override Move CurrentMove { get; set; }
-        private Dictionary<IStrategy, double> _memory = new Dictionary<IStrategy, double>();
-
-        private int _wins;
-        private int _gamesPlayed = 0;
-        public override int Wins {get; set;}
+        private int _switchStrategyAfter;
+        private double _degradeStrategy;
+        private int _gamesPlayed;
         
-        public Computer(IList<IStrategy> strategies)
-        {
-            _strategies = strategies;
-            _currentStrategy = _strategies.First();
+        private IStrategy _currentStrategy;
+        private readonly Dictionary<IStrategy, double> _memory = new Dictionary<IStrategy, double>();
 
-            foreach(IStrategy strategy in _strategies)
+        public GameMove CurrentMove { get; set; }
+        public int Wins {get; set;}
+        
+        public Computer(IList<IStrategy> strategies, int switchStrategyAfter, double degradeStrategy)
+        {
+            if (strategies == null)
+            {
+                throw new ArgumentNullException(nameof(strategies));
+            }
+
+            foreach(IStrategy strategy in strategies)
             {
                 _memory.Add(strategy, 0);
-            }          
+            }  
+            
+            _currentStrategy = strategies.First();
+            
+            _switchStrategyAfter = switchStrategyAfter;
+            _degradeStrategy = degradeStrategy;
         }
 
-        public override Move GetMove()
+        public GameMove GetMove()
         {
             _gamesPlayed++;
-            _memory[_currentStrategy] = ((double)Wins / (double)_gamesPlayed) * _degradeStragety;
+            _memory[_currentStrategy] = Wins / (double)_gamesPlayed * _degradeStrategy;
 
-            Move move = _currentStrategy.PickMove();
+            GameMove move = _currentStrategy.PickMove();
             CurrentMove = move;
 
             if (_gamesPlayed % _switchStrategyAfter == 0)
             {
-                KeyValuePair<IStrategy, double> strategy = _memory.Where(x => x.Value == 0).Select(x => new { o = x, guid = Guid.NewGuid()}).OrderBy(y => y.guid).Select(z => z.o).FirstOrDefault();
+                KeyValuePair<IStrategy, double> strategy = _memory.Where(x => x.Value == 0)
+                    .Select(x => new { o = x, guid = Guid.NewGuid()})
+                    .OrderBy(y => y.guid)
+                    .Select(z => z.o)
+                    .FirstOrDefault();
 
                 if (strategy.Key == null)
                 {
@@ -59,6 +66,16 @@ namespace Sjerrul.RockPaperScissors.Players
             }
 
             return move;           
+        }
+
+        public IDictionary<IStrategy, double> GetStrategyMap()
+        {
+            return _memory;
+        }
+
+        public IStrategy GetCurrentStrategy()
+        {
+            return _currentStrategy;
         }
     }
 }

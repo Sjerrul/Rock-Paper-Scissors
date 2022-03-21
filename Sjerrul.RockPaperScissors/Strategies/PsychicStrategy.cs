@@ -1,23 +1,20 @@
 ﻿using Sjerrul.RockPaperScissors.Enums;
 using Sjerrul.RockPaperScissors.Players;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sjerrul.RockPaperScissors.Strategies
 {
     public class PsychicStrategy : IStrategy
     {
-        private readonly Player _player;
+        private readonly IPlayer _player;
 
-        public PsychicStrategy(Player playerToReadMindFrom)
+        public string Name => nameof(PsychicStrategy);
+
+        public PsychicStrategy(IPlayer playerToReadMindFrom)
         {
             _player = playerToReadMindFrom;
         }
 
-        public Move PickMove()
+        public GameMove PickMove()
         {
             return _player.GetMove();
         }

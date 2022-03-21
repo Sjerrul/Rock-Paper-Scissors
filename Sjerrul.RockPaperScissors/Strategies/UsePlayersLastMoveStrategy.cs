@@ -1,37 +1,32 @@
 ﻿using Sjerrul.RockPaperScissors.Enums;
 using Sjerrul.RockPaperScissors.Players;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sjerrul.RockPaperScissors.Strategies
 {
-    class UsePlayersLastMoveStrategy : IStrategy
+    public class UsePlayersLastMoveStrategy : IStrategy
     {
-        private readonly Player _player;
-        private Move? _playersPreviousMove;
+        private readonly IPlayer _player;
+        private GameMove? _playersPreviousMove;
 
-        public UsePlayersLastMoveStrategy(Player player)
+        public string Name => nameof(UsePlayersLastMoveStrategy);
+
+        public UsePlayersLastMoveStrategy(IPlayer player)
         {
             _player = player;
         }
 
-        public Move PickMove()
+        public GameMove PickMove()
         {
             if (!_playersPreviousMove.HasValue)
             {
                 _playersPreviousMove = _player.GetMove();
-                return Move.Rock;
+                return GameMove.Rock;
             }
 
-            Move moveToReturn = _playersPreviousMove.Value;
+            GameMove moveToReturn = _playersPreviousMove.Value;
             _playersPreviousMove = _player.GetMove();
 
             return moveToReturn;
-
-            //return Move.Paper;
         }
     }
 }

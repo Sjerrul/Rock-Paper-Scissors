@@ -1,17 +1,16 @@
-﻿using Sjerrul.RockPaperScissors.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Sjerrul.RockPaperScissors.Enums;
+using Sjerrul.RockPaperScissors.Strategies;
 
 namespace Sjerrul.RockPaperScissors.Players
 {
-    class Human : Player
+    public class Human : IHuman
     {
-        public override Move CurrentMove { get; set; }
+        public int Wins { get; set; }
+        public GameMove CurrentMove { get; set; }
 
-        public override Move GetMove()
+        public GameMove GetMove()
         {
             return CurrentMove;
         }

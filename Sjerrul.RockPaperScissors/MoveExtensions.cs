@@ -1,60 +1,34 @@
 ﻿using Sjerrul.RockPaperScissors.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sjerrul.RockPaperScissors
 {
     public static class MoveExtensions
     {
-        public static bool? Beats(this Move move, Move moveToBeat)
+        public static bool? Beats(this GameMove move, GameMove moveToBeat)
         {
-            if (move == Move.Rock)
+            switch (move)
             {
-                if (moveToBeat == Move.Paper)
-                {
+                case GameMove.Rock when moveToBeat == GameMove.Paper:
                     return false;
-                }
-                if (moveToBeat == Move.Scissors)
-                {
+                case GameMove.Rock when moveToBeat == GameMove.Scissors:
                     return true;
-                }
-
-                return null;
-            }
-
-            if (move == Move.Paper)
-            {
-                if (moveToBeat == Move.Scissors)
-                {
+                case GameMove.Rock:
+                    return null;
+                case GameMove.Paper when moveToBeat == GameMove.Scissors:
                     return false;
-                }
-                if (moveToBeat == Move.Rock)
-                {
+                case GameMove.Paper when moveToBeat == GameMove.Rock:
                     return true;
-                }
-
-                return null;
-            }
-
-            if (move == Move.Scissors)
-            {
-                if (moveToBeat == Move.Rock)
-                {
+                case GameMove.Paper:
+                    return null;
+                case GameMove.Scissors when moveToBeat == GameMove.Rock:
                     return false;
-                }
-                if (moveToBeat == Move.Paper)
-                {
+                case GameMove.Scissors when moveToBeat == GameMove.Paper:
                     return true;
-                }
-
-                return null;
+                case GameMove.Scissors:
+                    return null;
+                default:
+                    return null;
             }
-
-
-            return null;
         }
     }
 }

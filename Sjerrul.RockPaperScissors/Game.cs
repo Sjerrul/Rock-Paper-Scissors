@@ -3,22 +3,24 @@ using Sjerrul.RockPaperScissors.Players;
 using Sjerrul.RockPaperScissors.Strategies;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Sjerrul.RockPaperScissors
 {
-    class Game
+    public class Game
     {
-        private TextBox _textBox;
-        public Player HumanPlayer = new Human();
-        public Player ComputerPlayer;
+        private readonly TextBox _gameLog;
+        private readonly TextBox _strategyMap;
+        private readonly IComputer _computerPlayer;
 
-        public Game(TextBox textBox)
+        public IHuman HumanPlayer { get; }
+
+        public Game(TextBox gameLog, TextBox strategyMap, int switchComputerStrategyAfter, double degradeComputerStrategy)
         {
-            _textBox = textBox;
+            _gameLog = gameLog;
+            _strategyMap = strategyMap;
+
+            HumanPlayer = new Human();
 
             IList<IStrategy> strategies = new List<IStrategy>();
             strategies.Add(new UsePlayersLastMoveStrategy(HumanPlayer));
@@ -28,7 +30,7 @@ namespace Sjerrul.RockPaperScissors
             strategies.Add(new AlternateMovesStrategy());
             strategies.Add(new AlternateMovesReversedStrategy());
 
-            ComputerPlayer = new Computer(strategies);
+            _computerPlayer = new Computer(strategies, switchComputerStrategyAfter, degradeComputerStrategy);
 
             OutputLine("Game Initialized");
         }
@@ -36,27 +38,36 @@ namespace Sjerrul.RockPaperScissors
         public void Start()
         {
             OutputLine("Starting");
-
-            OutputLine("Input your move");            
+            OutputLine("Input your move");
         }
 
         private void OutputLine(string text)
         {
-            _textBox.AppendText(text + Environment.NewLine);
-           
+            _gameLog.AppendText(text + Environment.NewLine);
+        }
+        
+        private void UpdateStrategyMap()
+        {
+            _strategyMap.Clear();
+            foreach (var strategy in _computerPlayer.GetStrategyMap())
+            {
+                _strategyMap.AppendText($"{strategy.Key.Name}: {strategy.Value}{Environment.NewLine}");
+            }
+            
+            _strategyMap.AppendText($"Using {_computerPlayer.GetCurrentStrategy().Name}{Environment.NewLine}");
         }
 
         public void DoTurn()
         {
-            Move computerMove = ComputerPlayer.GetMove();
-            Move playerMove = HumanPlayer.GetMove();
+            GameMove computerMove = _computerPlayer.GetMove();
+            GameMove playerMove = HumanPlayer.GetMove();
 
             bool? computerBeatsPlayer = computerMove.Beats(playerMove);
             if (computerBeatsPlayer.HasValue)
             {
-                if (computerBeatsPlayer.Value == true)
+                if (computerBeatsPlayer.Value)
                 {
-                    ComputerPlayer.Wins++;
+                    _computerPlayer.Wins++;
                 }
                 else
                 {
@@ -64,10 +75,9 @@ namespace Sjerrul.RockPaperScissors
                 }
             }
 
-            OutputLine("You picked: " + playerMove + ", I picked " + computerMove);
-            OutputLine("You: " + HumanPlayer.Wins + " - Me: " + ComputerPlayer.Wins); 
+            OutputLine($"You picked: {playerMove}, I picked {computerMove}");
+            OutputLine($"You: {HumanPlayer.Wins} - Me: {_computerPlayer.Wins}");
+            UpdateStrategyMap();
         }
-
-        
     }
 }

@@ -1,32 +1,28 @@
 ﻿using Sjerrul.RockPaperScissors.Enums;
-using Sjerrul.RockPaperScissors.Players;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sjerrul.RockPaperScissors.Strategies
 {
-    class AlternateMovesReversedStrategy : IStrategy
+    public class AlternateMovesReversedStrategy : IStrategy
     {
-        private Move _nextMove;
+        private GameMove _nextMove;
 
         public AlternateMovesReversedStrategy()
         {
-            _nextMove = Move.Rock;
+            _nextMove = GameMove.Rock;
         }
 
-        public Move PickMove()
+        public string Name => nameof(AlternateMovesReversedStrategy);
+
+        public GameMove PickMove()
         {
-            Move moveToReturn = _nextMove;
+            GameMove moveToReturn = _nextMove;
 
             switch (_nextMove)
             {
-                case Move.Rock: _nextMove = Move.Scissors; break;
-                case Move.Paper:  _nextMove = Move.Rock; break;
-                case Move.Scissors:  _nextMove = Move.Paper; break;
-                default:  _nextMove = Move.Rock; break;
+                case GameMove.Rock: _nextMove = GameMove.Scissors; break;
+                case GameMove.Paper:  _nextMove = GameMove.Rock; break;
+                case GameMove.Scissors:  _nextMove = GameMove.Paper; break;
+                default:  _nextMove = GameMove.Rock; break;
             }
 
             return moveToReturn;
